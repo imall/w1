@@ -4,10 +4,31 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UserSecretsId>5aaad4ff-f51c-4014-9a13-5c78041e2af7</UserSecretsId>
-        <Configurations>Release;Development</Configurations>
+        <Configurations>Release;Development;Training</Configurations>
         <Platforms>AnyCPU</Platforms>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
     <ItemGroup>
+      <Content Remove="appsettings.Development.json" />
+      <Content Remove="appsettings.Release.json" />
+      <Content Remove="appsettings.Training.json" />
+    </ItemGroup>
+    <ItemGroup>
+      <None Include="appsettings.Development.json">
+        <IsTransformFile>true</IsTransformFile>
+        <DependentUpon>appsettings.json</DependentUpon>
+      </None>
+      <None Include="appsettings.Release.json">
+        <IsTransformFile>true</IsTransformFile>
+        <DependentUpon>appsettings.json</DependentUpon>
+      </None>
+      <None Include="appsettings.Training.json">
+        <IsTransformFile>true</IsTransformFile>
+        <DependentUpon>appsettings.json</DependentUpon>
+      </None>
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
         <PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="4.0.50">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -17,5 +38,10 @@
     <ItemGroup>
       <ProjectReference Include="..\w1.Common\w1.Common.csproj" />
       <ProjectReference Include="..\w1.Service\w1.Service.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Update="appsettings.json">
+        <TransformOnBuild>true</TransformOnBuild>
+      </Content>
     </ItemGroup>
 </Project>
