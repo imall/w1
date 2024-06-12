@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using w1.Common;
+using w1.Models;
 
 namespace w1;
 
@@ -18,7 +18,13 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-
+        builder.Services.AddDbContext<ContosoUniversityContext>(
+    options =>
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+        options.EnableSensitiveDataLogging();
+   
+    });
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
