@@ -12,35 +12,40 @@ namespace w1.Controllers;
 [Route("[controller]")]
 public class WeatherForecastController : ControllerBase
 {
-    private const int someNumber = 1;
+    private const int SomeNumber = 1;
 
     private static readonly string[] Summaries = new[]
     {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
-
-    private readonly ILogger<WeatherForecastController> _logger;
-    private readonly IOptions<AppsSettingsOptions> _options;
-    private readonly ContosoUniversityContext context;
+    
+    private readonly ContosoUniversityContext _context;
 
     public WeatherForecastController(
-        ILogger<WeatherForecastController> logger,
-        IOptions<AppsSettingsOptions> options,
         ContosoUniversityContext context)
     {
-        _logger = logger;
-        _options = options;
-        this.context = context;
+        _context = context;
     }
 
+    [HttpGet("root",Name = "GetWeathe")]
+    public IEnumerable<WeatherForecast> Get()
+    {
+        return Enumerable.Range(1, 5).Select(index => new WeatherForecast
+                         {
+                             Date = DateTime.Now.AddDays(index),
+                             TemperatureC = Random.Shared.Next(-20, 55),
+                             Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+                         })
+                         .ToArray();
+    }
 
     [HttpGet(Name = "GetWeatherForecast")]
     public IActionResult Get(string? q)
     {
         //var data = context.Courses.Where(x => x.CourseId > someNumber && x.Title.Contains("J"));
-        var data = from c in context.Courses
-                   join d in context.Departments on c.DepartmentId equals d.DepartmentId
-                   where c.CourseId > someNumber && d.StartDate.Date == DateTime.Parse("2015-03-21")
+        var data = from c in _context.Courses
+                   join d in _context.Departments on c.DepartmentId equals d.DepartmentId
+                   where c.CourseId > SomeNumber && d.StartDate.Date == DateTime.Parse("2015-03-21")
                    select new CourseVeiwModel()
                    {
                        CourseId = c.CourseId,
@@ -63,7 +68,7 @@ public class WeatherForecastController : ControllerBase
     [HttpGet("somekey")]
     public IActionResult GetStudent(string? q)
     {
-        var data = from c in context.MyDeptCourses
+        var data = from c in _context.MyDeptCourses
                    select c;
         if (!string.IsNullOrEmpty(q))
         {
@@ -76,7 +81,7 @@ public class WeatherForecastController : ControllerBase
     [HttpGet("GetStudentUseStoreProcedure")]
     public async Task<IActionResult> GetStudentUseStoreProcedure(string? q)
     {
-        var data = await context.GetProcedures().GetMyDeptCoursesAsync(q);
+        var data = await _context.GetProcedures().GetMyDeptCoursesAsync(q);
 
         return Ok(data);
     }
@@ -85,7 +90,7 @@ public class WeatherForecastController : ControllerBase
     [HttpGet("GetCourseWithPerson")]
     public ActionResult<IEnumerable<MyPersion>> GetCourseWithPerson(string? q)
     {
-        var data = context.Courses.Include(c => c.Instructors)
+        var data = _context.Courses.Include(c => c.Instructors)
             .SelectMany(c => c.Instructors, (c, i) => new MyPersion
             {
                 Id = i.Id,
@@ -107,7 +112,7 @@ public class WeatherForecastController : ControllerBase
             INNER JOIN [Department] AS [d] ON [c].[DepartmentID] = [d].[DepartmentID]
             """;
 
-        var data = await context.MyDeptCourses.FromSql($""" 
+        var data = await _context.MyDeptCourses.FromSql($""" 
                        SELECT [c].[CourseID] AS [CourseId], [c].[Title], [c].[Credits], [d].[Name] AS [DepartmentName], [d].[StartDate] AS [DepartmentDate]
                        FROM [Course] AS [c]
                        INNER JOIN [Department] AS [d] ON [c].[DepartmentID] = [d].[DepartmentID]

@@ -5,7 +5,7 @@ public class GetCoursesByPageViewModel
 
     public int Total { get; set; }
     public int TotalPages { get; set; }
-    public IEnumerable<CourseVeiwModel> Data { get; set; }
+    public required IEnumerable<CourseVeiwModel> Data { get; set; }
 
 
 }

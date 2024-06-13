@@ -87,7 +87,7 @@ namespace w1.Controllers
             // 這代表資料表內的每一筆資料、每一筆欄位都會被更新
             // _context.Entry(course).State = EntityState.Modified;
             var entity = await _context.Courses.FindAsync(id);
-            entity.Title = course.Title;
+            entity!.Title = course.Title;
             entity.Credits = course.Credits;
             try
             {
