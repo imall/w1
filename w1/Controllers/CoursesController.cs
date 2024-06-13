@@ -22,15 +22,23 @@ namespace w1.Controllers
         }
 
         // GET: api/Courses
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Course>>> GetCourses()
+        [HttpGet("GetCourses",Name = "GetCourses")]
+        [ProducesResponseType(typeof(IEnumerable<CourseVeiwModel>), StatusCodes.Status200OK)]
+        public async Task<IEnumerable<CourseVeiwModel>> GetCourses()
         {
-            var data = await _context.Courses.ToListAsync();
-            return data;
+            var data = await _context.Courses.Include(course => course.Department).ToListAsync();
+            return data.Select(c=> new CourseVeiwModel()
+            {
+                CourseId = c.CourseId,
+                Title = c.Title,
+                Credits = c.Credits,
+                DepartmentName = c.Department.Name,
+                DepartmentDate = c.Department.StartDate
+            });
         }
 
         // GET: api/Courses
-        [HttpGet("page/{pageIndex}/{pageSize}")]
+        [HttpGet("page/{pageIndex}/{pageSize}",Name = "GetCoursesByPage")]
         public async Task<IActionResult> GetCoursesByPage(int pageIndex = 1, int pageSize = 2)
         {
             // 1.一定要先排序
@@ -58,7 +66,10 @@ namespace w1.Controllers
         }
 
         // GET: api/Courses/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetCourse")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<Course>> GetCourse(int id)
         {
             var course = await _context.Courses.FindAsync(id);
@@ -73,7 +84,10 @@ namespace w1.Controllers
 
         // PUT: api/Courses/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "PutCourse")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> PutCourse(int id, CourseUpdate course)
         {
             // if (id != course.CourseId)
@@ -110,7 +124,9 @@ namespace w1.Controllers
 
         // POST: api/Courses
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("PostCourse", Name = "PostCourse")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesDefaultResponseType]
         public async Task<ActionResult<Course>> PostCourse(CourseCreate course)
         {
             var dto = new Course()
@@ -127,7 +143,10 @@ namespace w1.Controllers
         }
 
         // DELETE: api/Courses/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "DeleteCourse")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesDefaultResponseType]
         public async Task<IActionResult> DeleteCourse(int id)
         {
             var course = await _context.Courses.FindAsync(id);
