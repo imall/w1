@@ -20,11 +20,14 @@ public class WeatherForecastController : ControllerBase
     };
     
     private readonly ContosoUniversityContext _context;
+    private readonly IConfiguration _config;
 
     public WeatherForecastController(
-        ContosoUniversityContext context)
+        ContosoUniversityContext context,
+        IConfiguration config)
     {
         _context = context;
+        _config = config;
     }
 
     [HttpGet("root",Name = "GetWeathe")]
@@ -38,6 +41,14 @@ public class WeatherForecastController : ControllerBase
                          })
                          .ToArray();
     }
+
+    [HttpGet("GetSomeKey")]
+    public string GetSomekey()
+    {
+        return _config.GetValue<string>("Somekey")!;
+    }
+
+
 
     [HttpGet(Name = "GetWeatherForecast")]
     public IActionResult Get(string? q)

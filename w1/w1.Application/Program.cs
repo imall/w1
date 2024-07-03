@@ -18,13 +18,11 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-        builder.Services.AddDbContext<ContosoUniversityContext>(
-    options =>
-    {
-        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
-        options.EnableSensitiveDataLogging();
-   
-    });
+        builder.Services.AddDbContext<ContosoUniversityContext>(options =>
+        {
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            options.EnableSensitiveDataLogging();
+        });
 
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
@@ -33,9 +31,9 @@ public class Program
         //     (builder.Configuration.GetSection(AppsSettingsOptions.Appsettings));
 
         builder.Services.AddOptions<AppsSettingsOptions>()
-            .Bind(builder.Configuration.GetSection(AppsSettingsOptions.Appsettings))
-            .ValidateDataAnnotations()
-            .ValidateOnStart();
+               .Bind(builder.Configuration.GetSection(AppsSettingsOptions.Appsettings))
+               .ValidateDataAnnotations() // 取值時驗證
+               .ValidateOnStart(); // 啟動時驗證
 
         var app = builder.Build();
 
